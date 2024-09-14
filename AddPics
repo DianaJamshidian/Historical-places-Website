@@ -1,0 +1,43 @@
+using System;
+using System.Data;
+using System.Configuration;
+using System.Collections;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+
+public partial class Hotels_AddPics : System.Web.UI.Page
+{
+    Connection bank = new Connection();
+    DataView dV = new DataView();
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            bank.drop(DropDownList1, "select * from TblBuild", "TblBuild", "NameBuild", "IdBuild");
+
+            bank.grid(GridView1, "select * from TblBuildPic where IdBuild='" + DropDownList1.SelectedValue + "'", "TblBuildPic");
+        }
+    }
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        Random rnd = new Random();
+        string str = rnd.Next(100000, 999999).ToString();
+        File1.PostedFile.SaveAs(Server.MapPath("") + "/Images/" + str + DropDownList1.SelectedValue + ".jpg");
+        bank.insert("insert into TblBuildPic(IdBuild,Pic)values('" + DropDownList1.SelectedValue + "','" + "Admin/Images/" + str + DropDownList1.SelectedValue + ".jpg" + "')");
+        bank.grid(GridView1, "select * from TblBuildPic where IdBuild='" + DropDownList1.SelectedValue + "'", "TblBuildPic");
+    }
+    protected void GridView1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        bank.insert("delete from TblBuildPic where IdPic='" + GridView1.SelectedValue.ToString() + "'");
+        bank.grid(GridView1, "select * from TblBuildPic where IdBuild='" + DropDownList1.SelectedValue + "'", "TblBuildPic");
+    }
+    protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        bank.grid(GridView1, "select * from TblBuildPic where IdBuild='" + DropDownList1.SelectedValue + "'", "TblBuildPic");
+    }
+}
