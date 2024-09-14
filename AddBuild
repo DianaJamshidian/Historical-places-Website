@@ -1,0 +1,66 @@
+using System;
+using System.Data;
+using System.Configuration;
+using System.Collections;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+
+public partial class Admin_AddBuild : System.Web.UI.Page
+{
+    Connection bank = new Connection();
+    DataView dV = new DataView();
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            bank.grid(GridView1, "select * from TblBuild", "TblBuild");
+            bank.drop(DropDownList1, "select * from TblCity", "TblCity", "NameCity", "NameCity");
+        }
+    }
+    private void empty()
+    {
+        lblMsg.Text = "عملیات انجام گردید";
+        TextBox1.Text = TextBox2.Text ="";
+        bank.grid(GridView1, "select * from TblBuild", "TblBuild");
+    }
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            File1.PostedFile.SaveAs(Server.MapPath("") + "/Images/" + TextBox1.Text + ".jpg");
+            bank.insert("insert into TblBuild(IdBuild,NameBuild,CityBuild,LogoBuild)values('" + TextBox1.Text + "','" + TextBox2.Text + "','" + DropDownList1.SelectedValue + "','" + "Admin/Images/" + TextBox1.Text + ".jpg" + "')");
+            empty();
+        }
+        catch { lblMsg.Text = "در ورود اطلاعات دقت نمایید"; }
+    }
+    protected void Button2_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            bank.insert("update TblBuild set NameBuild='" + TextBox2.Text + "',CityBuild='" + DropDownList1.SelectedValue + "',LogoBuild='" + lblMsg.Text + "' where IdBuild='" + TextBox1.Text + "'");
+            empty();
+        }
+        catch { lblMsg.Text = "در ورود اطلاعات دقت نمایید"; }
+    }
+    protected void Button3_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            bank.insert("delete from TblBuild where IdBuild='" + TextBox1.Text + "'");
+            empty();
+        }
+        catch { lblMsg.Text = "در ورود اطلاعات دقت نمایید"; }
+    }
+    protected void GridView1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        TextBox1.Text = GridView1.SelectedRow.Cells[0].Text;
+        TextBox2.Text = GridView1.SelectedRow.Cells[1].Text;
+        DropDownList1.SelectedItem.Text = GridView1.SelectedRow.Cells[2].Text;
+ 
+        
+    }
+}
